@@ -1,0 +1,79 @@
+<% include partials/header.ejs %>
+
+<div class="container">
+<form class="select-points-form" action="/" method="get" enctype="multipart/form-data">
+    <!--
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <input type="name" class="form-control" name="name" id="name" placeholder="Searching for a specific place?">
+        </div>
+    </div>
+    -->
+    <div class="form-row ">
+        <select id="type" name="type" class="form-control col-md-6">
+            <option selected disabled>Type of place</option>
+            <option value="1">Art Museum</option>
+            <option value="2">Music Museum</option>
+            <option value="3">History & Culture Museum</option>
+            <option value="4">Science & Nature Museum</option>
+            <option value="5">Gallery</option>
+            <option value="6">Culture Centre</option>
+            <option value="7">Library</option>
+            <option value="8">Theater</option>
+            <option value="9">Opera House</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-2">
+            <input type="checkbox" class="form-control" name="wifi" id="wifi">Free wifi zone
+        </div>
+        <div class="form-group col-md-2">
+            <input type="checkbox" class="form-control" name="parking" id="parking"> Parking
+        </div>
+        <div class="form-group col-md-2">
+            <input type="checkbox" class="form-control" name="children_friendly" id="children_friendly"
+                   > Children friendly
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary float-right">Select Points</button>
+</form>
+</div>
+
+
+<div class="table-wrapper">
+    <% if (points.length > 0) {%>
+    <table class="table table-hovered">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Parking</th>
+                <th scope="col">Children Friendly</th>
+                <th scope="col">Wifi</th>
+                <th scope="col">Type</th>
+                <th scope="col">Lat</th>
+                <th scope="col">Lon</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% points.forEach((point, index) => { %>
+            <tr>
+                <th scope="row"><%= point.id %></th>
+                    <td><%= point.name %></td>
+                    <td><%= point.parking %></td>
+                    <td><%= point.children_friendly %></td>
+                    <td><%= point.wifi %></td>
+                    <td><%= point.type %></td>
+                    <td><%= point.lat %></td>
+                    <td><%= point.lon %></td>
+            </tr>
+        <% }) %>
+        </tbody>
+    </table>
+    <% } else { %>
+    <p class="text-center">No points found. Go <a href="/add" >here</a> to add points.</p>
+    <% } %>
+</div>
+</div>
+</body>
+</html>
