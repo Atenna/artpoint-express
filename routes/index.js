@@ -44,6 +44,29 @@ const queryBuilder = (req) => {
     return points_query;
 };
 
+const queryBuilderForProcedure = (req) => {
+    var procedure = "CALL get_poi(";
+    var q = url.parse(req.url, true);
+    var data = q.query;
+
+    var type = data.type;
+    procedure += type;
+
+    var parking = data.parking;
+    procedure += ", " + parking;
+
+    var children_friendly = data.children_friendly;
+    procedure += ", " + children_friendly;
+
+    var wifi = data.wifi;
+    procedure += ", " + wifi;
+
+    // TODO
+    var name = 'NULL';
+    procedure += ", " + name + ')';
+
+    return procedure;
+}
 /*module.exports = {
     getHomePage: (req, res) => {
         var points_query = queryBuilder(req);
@@ -72,24 +95,48 @@ const queryBuilder = (req) => {
     }
 };*/
 
+function storedProcedure(conn, params) {
+
+    var call = queryBuilderForProcedure(params);
+    db.query(call, (err, result) => {
+        if (err) {
+            res.redirect('/');
+        }
+        //console.log(result[0]);
+        res.json(result);
+    });
+}
+
 router.get('/', function(req, res, next) {
     res.render('index.pug', {
         title: message
     });
 });
 
-router.get('/data', function(req, res) {
-    var points_query = queryBuilder(req);
+router.get('/data', function (req, res) {
+    //var call = queryBuilder(req);
+    var call = queryBuilderForProcedure(req);
 
-    db.query(points_query, (err, result) => {
-        if(err) {
+    //console.log(req);
+    console.log(call);
+
+    db.query(call, (err, result) => {
+        if (err) {
             res.redirect('/');
         }
-        console.log(result[1].lat);
-        res.json(result);
+        console.log(result);
+        res.json(result[0]);
     });
-
 });
+
+
+    //db.query(call, (err, result) => {
+    //    if(err) {
+    //        res.redirect('/');
+    //    }
+    //    console.log(result[1].lat);
+    //    res.json(result);
+    //});
 
 router.get('/map', function(req, res) {
     res.render('map.pug', {
