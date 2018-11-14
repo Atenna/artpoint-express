@@ -1,0 +1,31 @@
+extends layout
+block content
+    #map
+
+
+    script(type='text/javascript').
+        var map = L.map('map').setView([53.551086, 9.993682], 11);
+
+        // For different tile layers visit: https://leaflet-extras.github.io/leaflet-providers/preview/
+        var Wikimedia = L.tileLayer('https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png', {
+            attribution: '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>',
+            maxZoom: 19
+        }).addTo(map);
+
+        $.getJSON('/data', function (result) {
+
+            $.each(result, function(i, point) {
+                addPoint(point);
+            });
+        });
+
+        function addPoint(point) {
+            var pinIcon = L.icon({
+                iconUrl: '/assets/img/pin.png',
+                iconSize: [39, 39],
+                iconAnchor: [18, 39],
+                popupAnchor: [10, -35]
+            });
+            var marker = L.marker([point.lon, point.lat], {icon: pinIcon}).addTo(map);
+            marker.bindPopup("<b>"+point.name+"</b>");
+        }

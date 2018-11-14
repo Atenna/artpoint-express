@@ -8,10 +8,10 @@ const bodyParser = require('body-parser');
 const mysql = require('mysql');
 const path = require('path');
 const app = express();
-var config = require('./config.js');
+const config = require('./config.js');
 
-const {getHomePage } = require('./routes/index');
-const {addPointPage, addPoint, deletePlayer, editPlayer, editPlayerPage} = require('./routes/point');
+var getHomePage  = require('./routes/index');
+const {addPointPage, addPoint} = require('./routes/point');
 const port = 5000;
 
 // create connection to database
@@ -37,8 +37,7 @@ app.use(express.static(path.join(__dirname, 'public'))); // configure express to
 app.use(fileUpload()); // configure fileupload
 
 // routes for the app
-
-app.get('/', getHomePage);
+app.use('/', getHomePage);
 app.get('/add', addPointPage);
 app.post('/add', addPoint);
 
@@ -47,3 +46,5 @@ app.post('/add', addPoint);
 app.listen(port, () => {
     console.log(`Server running on port: ${port}`);
 });
+
+module.exports = app;

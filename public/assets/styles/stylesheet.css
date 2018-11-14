@@ -1,0 +1,15 @@
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+#map {
+    height: 100%;
+}
+body {
+    margin:0;
+    padding:0px;
+    font:14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+a {
+    color:#00B7FF;
+}

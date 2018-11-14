@@ -10,17 +10,12 @@
     </div>
     -->
     <div class="form-row ">
+        <%if (types.length > 0) %>
         <select id="type" name="type" class="form-control col-md-6">
-            <option selected disabled>Type of place</option>
-            <option value="1">Art Museum</option>
-            <option value="2">Music Museum</option>
-            <option value="3">History & Culture Museum</option>
-            <option value="4">Science & Nature Museum</option>
-            <option value="5">Gallery</option>
-            <option value="6">Culture Centre</option>
-            <option value="7">Library</option>
-            <option value="8">Theater</option>
-            <option value="9">Opera House</option>
+            <option selected value="0">Type of place</option>
+            <% types.forEach((type, index) => { %>
+            <option value="<%= type.id %>"><%= type.type %></option>
+            <% }) %>
         </select>
     </div>
     <div class="form-row">
@@ -35,10 +30,15 @@
                    > Children friendly
         </div>
     </div>
-    <button type="submit" class="btn btn-primary float-right">Select Points</button>
+    <button type="submit" onclick="loadPage()" class="btn btn-primary float-right">Select Points</button>
 </form>
 </div>
-
+<div class="row">
+    <div class="col-12">
+        <div id="map"></div>
+    </div>
+</div>
+<div id="response"></div>
 
 <div class="table-wrapper">
     <% if (points.length > 0) {%>
@@ -75,5 +75,30 @@
     <% } %>
 </div>
 </div>
+
+<script>
+    var map = L.map('map').setView([53.551086, 9.993682], 11);
+
+    // For different tile layers visit: https://leaflet-extras.github.io/leaflet-providers/preview/
+    var Wikimedia = L.tileLayer('https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png', {
+        attribution: '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>',
+        maxZoom: 19
+    }).addTo(map);
+</script>
+<script>
+    function loadPage() {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if(this.readyState == 4 && this.status == 200) {
+                document.getElementById("response").innerHTML = this.responseText;
+            }
+        };
+        xhttp.open("GET", "http://localhost:5000/?type=7&wifi=on", true);
+        xhttp.send();
+    }
+</script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 </body>
 </html>
