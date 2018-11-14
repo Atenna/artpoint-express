@@ -1,22 +1,47 @@
 extends layout
 block content
-    #map
+    .container-fluid
+        .row
+            .col
+                form.select-points-form(action='/map', method='get', enctype='multipart/form-data')
+                    .form-row
+                        | Type
+                        select#type.form-control.col-md-6(name='type')
+                            option(selected='', value='0') Type of place
+                            option(value='1') Something2
+                    .form-row
+                        .form-group.col-md-2
+                            input#wifi.form-control(type='checkbox', name='wifi')
+                            | Free wifi zone
+                        .form-group.col-md-2
+                            input#parking.form-control(type='checkbox', name='parking')
+                            |  Parking
+                        .form-group.col-md-2
+                            input#children_friendly.form-control(type='checkbox', name='children_friendly')
+                            |  Children friendly
+                    button.btn.btn-primary.float-right(type='button', id="fill") Select Points
+
+                button.btn.btn-primary.float-right(type='button', id="clear") Clear Map
+            .col-9
+                #map
 
 
     script(type='text/javascript').
         var map = L.map('map').setView([53.551086, 9.993682], 11);
-
         // For different tile layers visit: https://leaflet-extras.github.io/leaflet-providers/preview/
         var Wikimedia = L.tileLayer('https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png', {
             attribution: '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>',
             maxZoom: 19
         }).addTo(map);
+        var markers = [];
 
-        $.getJSON('/data', function (result) {
 
-            $.each(result, function(i, point) {
-                addPoint(point);
-            });
+        $("#clear").click(function() {
+            clearMap();
+        });
+
+        $("#fill").click(function () {
+            fillMap();
         });
 
         function addPoint(point) {
@@ -26,6 +51,41 @@ block content
                 iconAnchor: [18, 39],
                 popupAnchor: [10, -35]
             });
+
             var marker = L.marker([point.lon, point.lat], {icon: pinIcon}).addTo(map);
-            marker.bindPopup("<b>"+point.name+"</b>");
+            marker.bindPopup("<b>" + point.name + "</b>");
+            markers[markers.length] = marker;
+        }
+
+        function clearMap() {
+            for (var i = 0; i < markers.length; i++) {
+                map.removeLayer(markers[i]);
+            }
+        }
+
+        function fillMap() {
+            clearMap();
+            var params = getParams();
+            var query = '/data?' + params;
+            $.getJSON(query, function (result) {
+
+                $.each(result, function (i, point) {
+                    addPoint(point);
+                });
+
+            });
+        }
+
+        function getParams() {
+            var params = "/data?";
+            var type = isChecked("#type");
+            var wifi = isChecked("#wifi");
+            var kids = isChecked("#children_friendly");
+            var park = isChecked("#parking");
+            params = 'type='+type+'&wifi='+wifi+'&parking='+park+'&children_friendly='+kids;
+            return params;
+        }
+
+        function isChecked(id) {
+            return $(id).is(':checked') ? 1 : 0;
         }

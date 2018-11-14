@@ -23,15 +23,15 @@ const queryBuilder = (req) => {
         var type = data.type;
         points_query += " AND type = '" + type + "'";
     }
-    if (data.parking != undefined) {
+    if (data.parking != undefined && data.parking != '0') {
         var parking = 1;
         points_query += " AND parking = '" + parking + "'";
     }
-    if (data.children_friendly != undefined) {
+    if (data.children_friendly != undefined && data.children_friendly != '0') {
         var children_friendly = 1;
         points_query += " AND children_friendly = '" + children_friendly + "'";
     }
-    if (data.wifi != undefined) {
+    if (data.wifi != undefined && data.wifi != '0') {
         var wifi = 1;
         points_query += " AND wifi = '" + wifi + "'";
     }
