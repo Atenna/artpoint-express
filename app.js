@@ -1,6 +1,3 @@
-/**
- * Created by lieska on 09/11/2018.
- */
 
 const express = require('express');
 const fileUpload = require('express-fileupload');
@@ -11,11 +8,9 @@ const app = express();
 const config = require('./config.js');
 
 var getHomePage  = require('./routes/index');
-const {addPointPage, addPoint} = require('./routes/point');
 const port = 5000;
 
 // create connection to database
-// the mysql.createConnection function takes in a configuration object which contains host, user, password and the database name.
 const db = mysql.createConnection (config);
 
 // connect to database
@@ -38,9 +33,6 @@ app.use(fileUpload()); // configure fileupload
 
 // routes for the app
 app.use('/', getHomePage);
-app.get('/add', addPointPage);
-app.post('/add', addPoint);
-
 
 // set the app to listen on the port
 app.listen(port, () => {

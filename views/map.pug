@@ -1,40 +1,54 @@
 extends layout
 block content
-    .container-fluid
-        .row
-            .col
-                form.select-points-form(action='/map', method='get', enctype='multipart/form-data')
-                    .form-row
-                        | Type
-                        select#type.form-control.col-md-6(name='type')
-                            option(selected='', value='0') Type of place
-                            option(value='1') Something2
-                    .form-row
-                        .form-group.col-md-2
-                            input#wifi.form-control(type='checkbox', name='wifi')
-                            | Free wifi zone
-                        .form-group.col-md-2
-                            input#parking.form-control(type='checkbox', name='parking')
-                            |  Parking
-                        .form-group.col-md-2
-                            input#children_friendly.form-control(type='checkbox', name='children_friendly')
-                            |  Children friendly
-                    button.btn.btn-primary.float-right(type='button', id="fill") Select Points
+    .wrapper
+        nav(id='sidebar')
+            .sidebar-header
+                h3 ArtPoint Hamburg
+                img.img-fluid(src='/assets/img/hamburg.png', alt='Hanburg')
+                hr
+            form.select-points-form(action='/map', method='get', enctype='multipart/form-data')
+                | Type
+                select#types.form-control(name='type')
+                    option(selected='', value='0') Type of place
+                hr
+                .form-group
+                    input#wifi.form-control(type='checkbox', name='wifi')
+                    | Free wifi zone
 
-                button.btn.btn-primary.float-right(type='button', id="clear") Clear Map
-            .col-9
-                #map
+                .form-group
+                    input#parking.form-control(type='checkbox', name='parking')
+                    |  Parking
+
+                .form-group
+                    input#children_friendly.form-control(type='checkbox', name='children_friendly')
+                    |  Child friendly
+            hr
+            button.btn.btn-info.float-left(type='button', id="clear") Clear Map
+            button.btn.btn-info.float-right(type='button', id="fill") Select Points
+
+        #content
+            nav.navbar.navbar-expand-lg
+                .containter-fluid
+                    button.btn.btn-info(type='button', id='sidebarCollapse') Toggle Sidebar
+
+            #map
+            #dashboard
+                p.count
+                .square.square-selected(data-toggle="tooltip" data-placement="top" title="Selected")
+                .square.square-all(data-toggle="tooltip" data-placement="top" title="All")
+                canvas#doughnut(width="150px" height="150px")
+
 
 
     script(type='text/javascript').
-        var map = L.map('map').setView([53.551086, 9.993682], 11);
+        var map = L.map('map').setView([53.551086, 9.993682], 12);
         // For different tile layers visit: https://leaflet-extras.github.io/leaflet-providers/preview/
         var Wikimedia = L.tileLayer('https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png', {
             attribution: '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>',
             maxZoom: 19
         }).addTo(map);
         var markers = [];
-
+        var count = 0;
 
         $("#clear").click(function() {
             clearMap();
@@ -42,11 +56,17 @@ block content
 
         $("#fill").click(function () {
             fillMap();
+            updateDashboard();
         });
+
+
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
 
         function addPoint(point) {
             var pinIcon = L.icon({
-                iconUrl: '/assets/img/pin.png',
+                iconUrl: '/assets/img/pin-blue.png',
                 iconSize: [39, 39],
                 iconAnchor: [18, 39],
                 popupAnchor: [10, -35]
@@ -61,24 +81,28 @@ block content
             for (var i = 0; i < markers.length; i++) {
                 map.removeLayer(markers[i]);
             }
+            markers = [];
+            count = 0;
         }
 
         function fillMap() {
             clearMap();
             var params = getParams();
             var query = '/data?' + params;
+            console.log(query);
+            var allPoints = 196;
             $.getJSON(query, function (result) {
 
                 $.each(result, function (i, point) {
                     addPoint(point);
                 });
-
+                updateDashboard(result.length, 196);
             });
         }
 
         function getParams() {
             var params = "/data?";
-            var type = isChecked("#type");
+            var type = $("#types").val();
             var wifi = isChecked("#wifi");
             var kids = isChecked("#children_friendly");
             var park = isChecked("#parking");
@@ -89,3 +113,61 @@ block content
         function isChecked(id) {
             return $(id).is(':checked') ? 1 : 0;
         }
+
+        function getTypes() {
+            var query = '/types';
+            $.getJSON(query, function (types) {
+
+                $.each(types, function (i, item) {
+                    addType(i, item.type);
+                });
+            });
+        }
+
+        function updateDashboard(displayed, all) {
+            $(".count").text(displayed + "/ " + all);
+            drawDoughnut(displayed, all);
+        }
+
+        function drawDoughnut(displayed, all) {
+            var ctx = document.getElementById("doughnut").getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Selected', 'All'],
+                    datasets: [{
+                        data: [displayed, all - displayed],
+                        backgroundColor: [
+                            'rgba(184,212,238)',
+                            'rgba(220,224,216)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    maintainAspectRatio: true,
+                    legend: {
+                        display: false
+                    },
+                    tooltips: {
+                        enabled: false
+                    }
+                }
+            });
+        }
+
+        function addType(i, type) {
+            $('#types').append('<option value="' + ++i + '">' +type+'</option>');
+        }
+
+        $(document).ready(function () {
+            getTypes();
+        });
+
+        $(document).ready(function () {
+
+            $('#sidebarCollapse').on('click', function () {
+                $('#sidebar').toggleClass('active');
+            });
+            map.invalidateSize();
+        });

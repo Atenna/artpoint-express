@@ -5,12 +5,17 @@ const message = "ArtPoint Hamburg";
 
 const queryWrapper = (statement) => {
 
-    db.query(statement, (err, result) => {
-        if(err) {
-            res.redirect('/');
-        }
-        return result;
+    return new Promise((resolve, reject) => {
+
+        db.query(statement, (err, result) => {
+            if(err)
+                return reject(err);
+
+            resolve(result);
+        });
+
     });
+
 };
 
 const queryBuilder = (req) => {
@@ -44,7 +49,7 @@ const queryBuilder = (req) => {
     return points_query;
 };
 
-const queryBuilderForProcedure = (req) => {
+const queryBuilderCallPoi = (req) => {
     var procedure = "CALL get_poi(";
     var q = url.parse(req.url, true);
     var data = q.query;
@@ -67,76 +72,35 @@ const queryBuilderForProcedure = (req) => {
 
     return procedure;
 }
-/*module.exports = {
-    getHomePage: (req, res) => {
-        var points_query = queryBuilder(req);
-        var types_query = "SELECT * FROM types";
-        const message = "ArtPoint Hamburg";
 
-        Promise.all([
-            queryWrapper(points_query),
-            queryWrapper(types_query)
-        ])
-            .then(([points, types]) => {
-
-                // if playing with node front-end
-                res.render('index.ejs', {
-                    title: message,
-                    points,
-                    types
-                });
-                // for the back-end part
-                //res.send(points);
-            })
-            .catch(err => {
-                console.error(err);
-                res.redirect('/');
-            })
-    }
-};*/
-
-function storedProcedure(conn, params) {
-
-    var call = queryBuilderForProcedure(params);
-    db.query(call, (err, result) => {
-        if (err) {
-            res.redirect('/');
-        }
-        //console.log(result[0]);
-        res.json(result);
-    });
+const queryBuilderCallTypes = (req) => {
+    var procedure = "CALL getTypes()";
+    return procedure;
 }
 
-router.get('/', function(req, res, next) {
-    res.render('index.pug', {
-        title: message
-    });
-});
-
 router.get('/data', function (req, res) {
-    //var call = queryBuilder(req);
-    var call = queryBuilderForProcedure(req);
-
-    //console.log(req);
-    console.log(call);
+    var call = queryBuilderCallPoi(req);
 
     db.query(call, (err, result) => {
         if (err) {
             res.redirect('/');
         }
-        console.log(result);
+        //console.log(result);
         res.json(result[0]);
     });
 });
 
+router.get('/types', function (req, res) {
+    var call = queryBuilderCallTypes(req);
 
-    //db.query(call, (err, result) => {
-    //    if(err) {
-    //        res.redirect('/');
-    //    }
-    //    console.log(result[1].lat);
-    //    res.json(result);
-    //});
+    db.query(call, (err, result) => {
+        if (err) {
+            res.redirect('/');
+        }
+        //console.log(result);
+        res.json(result[0]);
+    });
+});
 
 router.get('/map', function(req, res) {
     res.render('map.pug', {

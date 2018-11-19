@@ -1,4 +1,100 @@
-#map {
-    height: 300px;
+@import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #b8d4ef;
 }
 
+p {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1em;
+    font-weight: 300;
+    line-height: 1.7em;
+    color: #999;
+}
+
+#map {
+    height: 70%;
+    width: 120%;
+    overflow: hidden;
+}
+
+.wrapper {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+}
+
+#sidebar {
+    min-width: 280px;
+    max-width: 280px;
+    background: #b8d4ef;
+    color: #fff;
+    transition: all 0.3s;
+    padding: 15px;
+}
+
+.navbar {
+    background-color: #b8d4ef;
+}
+
+#sidebar .select-points-form {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.0em;
+    font-weight: 300;
+    line-height: 1.7em;
+    color: #0077b3;
+}
+
+#sidebar .sidebar-header {
+    padding: 20px;
+    background: #b8d4ef;
+}
+
+#content {
+    width: 100%;
+    min-height: 100vh;
+    transition: all 0.3s;
+    background-color: #eeeae6;
+}
+
+.square{
+    width: 20px;
+    height: 20px;
+    float: left;
+}
+
+.square-all {
+    background-color: #dce0d8;
+}
+
+.square-selected {
+    background-color: #b8d4ef;
+}
+
+.btn-info {
+    background-color: #0077b3;
+    border-color: #0077b3;
+}
+
+#sidebar.active {
+    margin-left: -280px;
+}
+
+#dashboard {
+    position: relative;
+    height:18vh;
+    width:80vw;
+    padding-top: 5px;
+    padding-left: 20px;
+}
+
+#doughnut {
+    height: inherit;
+    width: 20%;
+}
+
+canvas {
+    width: 200px;
+    height: 200px;
+}
