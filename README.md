@@ -7,6 +7,8 @@
 - Pug
 - Leaflet map
 
+![alt text](https://github.com/Atenna/artpoint-express/blob/master/public/assets/img/screenshot.png)
+
 ## Node.js | Express app
 
 app.js | Setup
