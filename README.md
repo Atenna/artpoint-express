@@ -1,5 +1,14 @@
 # Map | Filtered Points of Interest
 
+## Data flow
+1. Select data on client side 
+2. On click, send request ``` var query = '/data?' + params;``` 
+3. Node server side handles the request ``` router.get('/data', function (req, res)```
+4. Communication with the DB ``` db.query(call, (err, result) => { ... res.json(result[0]); } ```
+5. Client reads the JSON response  ``` $.getJSON(query, function (result) ```
+6. Client clears the map and add selected points to the map ``` $.each(result, function () { addPoint(point) })```
+7. Update the dashboard ```drawDoughnut(displayed, all);```
+
 ## Technolgoies
 
 - MySQL
